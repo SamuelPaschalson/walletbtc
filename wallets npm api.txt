@@ -1,0 +1,13 @@
+node-binance-api
+bybit-api
+crypto
+nodemon
+sqllite3
+express-validator
+@trustwallet/wallet-core
+@walletconnect/client
+@walletconnect/web3-provider web3
+
+
+swagger-ui-express
+swagger-jsdoc

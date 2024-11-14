@@ -1,0 +1,4 @@
+Show a list of all the connected wallet addresses
+get balance of the wallets and reduce the balance in the connectby walletaddress, if the wallet address exists enable it to true else add it to the user wallet
+every endpoint should check for wallet hidden
+get history should be able to select the date range
