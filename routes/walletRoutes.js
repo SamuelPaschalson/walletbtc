@@ -19,6 +19,7 @@ router.post("/:userId/connect-wallet-address", auth, connectWalletAddress);
 router.get("/:walletId/get-balance", auth, getWalletBalance);
 router.get("/:walletId/get-history", auth, getWalletHistory);
 router.post("/:walletId/transactions", auth, transactions);
+router.post("/:walletId/transactions-btc", transactions);
 router.get("/:walletId/get-transactions", auth, getTransactions);
 router.get("/:walletId/get-transactions", auth, getTransactionById);
 router.get("/:walletId/search", auth, search);
