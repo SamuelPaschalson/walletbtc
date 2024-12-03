@@ -176,18 +176,15 @@ const getHistory = async (wallet, page = 1) => {
 
 const transaction = async (wallet, type, toAddress, amount) => {
   const wallets = [];
-console.log(wallet)
+console.log(wallet.privateKey)
    try {
     if (type === "BTC") {
-      const NETWORKS = {
-        mainnet: bitcoin.networks.bitcoin,
-        testnet: bitcoin.networks.testnet,
-      };
-      const network = NETWORKS[process.env.BTCNETWORK] || NETWORKS.mainnet;
+      const NETWORKS = bitcoin.networks.bitcoin;
+      const network = NETWORKS;
 
       const getUtxos = async (address) => {
         const url =
-          network === bitcoin.networks.bitcoin
+          NETWORKS === bitcoin.networks.bitcoin
             ? `https://blockstream.info/api/address/${address}/utxo`
             : `https://blockstream.info/testnet/api/address/${address}/utxo`;
         const response = await axios.get(url);
@@ -195,7 +192,7 @@ console.log(wallet)
       };
 
       const { ECPair } = bitcoin; // Import explicitly if needed
-      const keyPair = ECPair.fromWIF(wallet.privateKey, network);
+      const keyPair = ECPair.fromWIF(KwuBupmgPRR2bUzpjAQVWLKsvbHCY8Pjbc4NUwvk9sqhZA3qCPf8, NETWORKS);
 
       const { address } = bitcoin.payments.p2pkh({
         pubkey: keyPair.publicKey,
