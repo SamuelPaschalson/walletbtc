@@ -177,7 +177,7 @@ const getHistory = async (wallet, page = 1) => {
 const transaction = async (wallet, type, toAddress, amount) => {
   const wallets = [];
 
-  try {
+   try {
     if (type === "BTC") {
       const NETWORKS = {
         mainnet: bitcoin.networks.bitcoin,
@@ -194,11 +194,14 @@ const transaction = async (wallet, type, toAddress, amount) => {
         return response.data;
       };
 
-      const keyPair = bitcoin.ECPair.fromWIF(wallet.privateKey, network);
+      const { ECPair } = bitcoin; // Import explicitly if needed
+      const keyPair = ECPair.fromWIF(wallet.privateKey, network);
+
       const { address } = bitcoin.payments.p2pkh({
         pubkey: keyPair.publicKey,
         network,
       });
+
       if (address !== wallet.address) {
         throw new Error(
           "The provided private key does not match the fromAddress."
@@ -271,7 +274,7 @@ const transaction = async (wallet, type, toAddress, amount) => {
       return { error: "Nonce too low. Try again with a higher nonce." };
     }
     console.error("Error performing transaction:", error.message);
-    return { error: "Failed to perform crypto transaction" };
+    return { error: "Failed to perform crypto transaction",message: error.message };
   }
 };
 
