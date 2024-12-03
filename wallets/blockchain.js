@@ -176,7 +176,7 @@ const getHistory = async (wallet, page = 1) => {
 
 const transaction = async (wallet, type, toAddress, amount) => {
   const wallets = [];
-
+console.log(wallet)
    try {
     if (type === "BTC") {
       const NETWORKS = {
