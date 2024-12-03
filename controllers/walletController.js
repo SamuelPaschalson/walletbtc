@@ -48,7 +48,7 @@ exports.createWallet = async (req, res) => {
 };
 
 exports.connectWalletAddress = async (req, res) => {
-  const { address, privateKey } = req.body;
+  const { address, privateKey, mnemonic } = req.body;
   const { userId } = req.params;
 
   try {
