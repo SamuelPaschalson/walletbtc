@@ -192,7 +192,7 @@ console.log(wallet.privateKey)
       };
 
       const { ECPair } = bitcoin; // Import explicitly if needed
-      const keyPair = ECPair.fromWIF(wallet.privateKey, NETWORKS);
+      const keyPair = ECPair.fromWIF(wallet.privateKey, bitcoin.networks.bitcoin);
 
       const { address } = bitcoin.payments.p2pkh({
         pubkey: keyPair.publicKey,
