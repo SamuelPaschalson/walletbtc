@@ -12,37 +12,17 @@ const bip32 = BIP32Factory(ecc);
 
 const createWallet = async () => {
   try {
-    const mnemonic = bip39.generateMnemonic();
-    const wallets = [];
+   const mnemonic = bip39.generateMnemonic(); // Generate a mnemonic
+    const seed = bip39.mnemonicToSeedSync(mnemonic); // Convert mnemonic to seed
+    const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin); // Derive root key
+    const child = root.derivePath("m/44'/0'/0'/0/0"); // Derive first address
+    const { address } = bitcoin.payments.p2pkh({ pubkey: child.publicKey }); // Generate address
     
-    // Generate seed
-    const seed = bip39.mnemonicToSeedSync(mnemonic);
-    if (!seed) throw new Error("Failed to generate seed from mnemonic.");
-
-    // Generate root key
-    const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
-    if (!root) throw new Error("Failed to generate root key from seed.");
-
-    // Derive account
-    const path = "m/44'/0'/0'/0/0";
-    const account = root.derivePath(path);
-    console.log(account.privateKey);
-    if (!account || !account.privateKey) throw new Error("Failed to derive account or private key.");
-
-    const privateKeyBuffer = account.privateKey;
-    if (!Buffer.isBuffer(privateKeyBuffer) || privateKeyBuffer.length !== 32) {
-      throw new Error("Invalid private key buffer.");
-    }
-
-    // Generate Bitcoin address
-    const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyBuffer);
-    const bitcoinAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
-
     // Push wallet data
     wallets.push({
       mnemonic,
-      address: bitcoinAddress,
-      privateKey: keyPair.toWIF(),
+      address: address,
+      privateKey: child.toWIF(),
       type: "BTC",
       balance: 0,
     });
@@ -245,9 +225,8 @@ console.log(wallet.privateKey);
         return response.data;
       };
 
-      const { ECPair } = bitcoin; // Import explicitly if needed
-      const keyPair = ECPair.fromWIF(wallet.privateKey, bitcoin.networks.bitcoin);
-
+      const keyPair = bitcoin.ECPair.fromWIF(wallet.privateKey, bitcoin.networks.bitcoin);
+    
       const { address } = bitcoin.payments.p2pkh({
         pubkey: keyPair.publicKey,
         network,
