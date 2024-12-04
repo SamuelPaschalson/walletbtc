@@ -11,6 +11,7 @@ const { formatBalance } = require("../utils/validation");
 const bip32 = BIP32Factory(ecc);
 
 const createWallet = async () => {
+  const wallets = [];
   try {
    const mnemonic = bip39.generateMnemonic(); // Generate a mnemonic
     const seed = bip39.mnemonicToSeedSync(mnemonic); // Convert mnemonic to seed
