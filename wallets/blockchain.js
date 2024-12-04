@@ -29,8 +29,13 @@ const createWallet = async () => {
     console.log(account.privateKey);
     if (!account || !account.privateKey) throw new Error("Failed to derive account or private key.");
 
+    const privateKeyBuffer = account.privateKey;
+    if (!Buffer.isBuffer(privateKeyBuffer) || privateKeyBuffer.length !== 32) {
+      throw new Error("Invalid private key buffer.");
+    }
+
     // Generate Bitcoin address
-    const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
+    const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyBuffer);
     const bitcoinAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
 
     // Push wallet data
