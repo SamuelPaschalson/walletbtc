@@ -11,35 +11,41 @@ const { formatBalance } = require("../utils/validation");
 const bip32 = BIP32Factory(ecc);
 
 const createWallet = async () => {
-  const mnemonic = bip39.generateMnemonic();
-  const wallets = [];
-  // Bitcoin Wallet
-  const seed = bip39.mnemonicToSeedSync(mnemonic);
-  // Use the BIP44 derivation path for Bitcoin: m/44'/0'/0'/0/0
-  // Use the BIP84 derivation path for Bitcoin: m/84'/0'/0'/0/0
-  const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+  try {
+    const mnemonic = bip39.generateMnemonic();
+    const wallets = [];
+    
+    // Generate seed
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    if (!seed) throw new Error("Failed to generate seed from mnemonic.");
 
-  // Define the BIP44 derivation path for Bitcoin
-  const path = "m/44'/0'/0'/0/0";
+    // Generate root key
+    const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+    if (!root) throw new Error("Failed to generate root key from seed.");
 
-  // Derive the account node
-  const account = root.derivePath(path);
+    // Derive account
+    const path = "m/44'/0'/0'/0/0";
+    const account = root.derivePath(path);
+    if (!account || !account.privateKey) throw new Error("Failed to derive account or private key.");
 
-  // Create ECPair from the private key
-  const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
+    // Generate Bitcoin address
+    const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
+    const bitcoinAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
 
-  // Create Bitcoin address using P2PKH (Pay-to-PubKey-Hash)
-  const bitcoinW = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey });
+    // Push wallet data
+    wallets.push({
+      mnemonic,
+      address: bitcoinAddress,
+      privateKey: keyPair.toWIF(),
+      type: "BTC",
+      balance: 0,
+    });
 
-  wallets.push({
-    mnemonic: mnemonic,
-    address: bitcoinW.address,
-    privateKey: keyPair.toWIF(),
-    type: "BTC",
-    balance: 0,
-  });
-
-  return { wallets };
+    return { wallets };
+  } catch (error) {
+    console.error("Error in createWallet:", error.message);
+    throw error;
+  }
 };
 
 const connectWallet = async (mnemonic, privateKey, address) => {
