@@ -14,17 +14,23 @@ const bip32 = BIP32Factory(ecc);
 const createWallet = async () => {
   const wallets = [];
   try {
-   const mnemonic = bip39.generateMnemonic(); // Generate a mnemonic
-    const seed = bip39.mnemonicToSeedSync(mnemonic); // Convert mnemonic to seed
-    const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin); // Derive root key
-    const child = root.derivePath("m/44'/0'/0'/0/0"); // Derive first address
-    const { address } = bitcoin.payments.p2pkh({ pubkey: child.publicKey }); // Generate address
-    
+const seed = bip39.mnemonicToSeedSync(mnemonic);
+  const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+  const path = "m/44'/0'/0'/0/0";
+  const account = root.derivePath(path);
+
+  const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
+  const privateKeyWIF = keyPair.toWIF(); // Export WIF directly
+  const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey });
+
+  console.log("Generated WIF:", privateKeyWIF);
+  console.log("Generated Address:", address);
+
     // Push wallet data
     wallets.push({
       mnemonic,
       address: address,
-      privateKey: child.toWIF(),
+      privateKey: privateKeyWIF,
       type: "BTC",
       balance: 0,
     });
