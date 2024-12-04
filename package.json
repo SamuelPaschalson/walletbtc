@@ -38,7 +38,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "tiny-secp256k1": "^2.2.3",
-    "web3": "^4.11.1"
+    "web3": "^4.11.1",
+    "wif": "^5.0.0"
   },
   "devDependencies": {
     "@types/sinon": "^17.0.3",
