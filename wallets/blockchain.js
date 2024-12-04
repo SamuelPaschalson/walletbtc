@@ -51,34 +51,38 @@ const createWallet = async () => {
 const connectWallet = async (mnemonic, privateKey, address) => {
   try {
     const wallets = [];
-
     let bitcoinAddress, wif;
 
     if (mnemonic) {
-      // Derive address and private key from the mnemonic
+      // Derive address and private key from mnemonic
       const seed = bip39.mnemonicToSeedSync(mnemonic);
+      if (!seed) throw new Error("Failed to generate seed from mnemonic.");
+
       const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+      if (!root) throw new Error("Failed to generate root key from seed.");
+
       const path = "m/44'/0'/0'/0/0";
       const account = root.derivePath(path);
+      if (!account || !account.privateKey) throw new Error("Failed to derive account or private key.");
+
       const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
       bitcoinAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
       wif = keyPair.toWIF();
     } else if (privateKey) {
-      // Use the provided private key to create a Bitcoin address
+      // Use provided private key
       const keyPair = bitcoin.ECPair.fromWIF(privateKey, bitcoin.networks.bitcoin);
       bitcoinAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
       wif = privateKey;
     } else if (address) {
-      // Use the provided address directly (note: no private key for signing)
+      // Use provided address (no signing capability)
       bitcoinAddress = address;
     } else {
       throw new Error("At least one of mnemonic, privateKey, or address must be provided.");
     }
 
-    // Fetch balance from API
+    // Fetch balance
     const balanceUrl = `https://blockstream.info/api/address/${bitcoinAddress}`;
     const balanceResponse = await axios.get(balanceUrl);
-
     const balance =
       parseFloat(
         balanceResponse.data.chain_stats.funded_txo_sum / 1e8 -
@@ -88,14 +92,14 @@ const connectWallet = async (mnemonic, privateKey, address) => {
     // Push wallet data
     wallets.push({
       address: bitcoinAddress,
-      privateKey: wif || null, // Only include private key if available
+      privateKey: wif || null,
       type: "BTC",
       balance,
     });
 
     return { wallets };
   } catch (error) {
-    console.error("Error connecting wallet:", error.message);
+    console.error("Error in connectWallet:", error.message);
     throw error;
   }
 };
