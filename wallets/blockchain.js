@@ -26,6 +26,7 @@ const createWallet = async () => {
     // Derive account
     const path = "m/44'/0'/0'/0/0";
     const account = root.derivePath(path);
+    console.log(account.privateKey);
     if (!account || !account.privateKey) throw new Error("Failed to derive account or private key.");
 
     // Generate Bitcoin address
