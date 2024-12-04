@@ -176,7 +176,9 @@ const getHistory = async (wallet, page = 1) => {
 
 const transaction = async (wallet, type, toAddress, amount) => {
   const wallets = [];
-console.log(wallet.privateKey)
+console.log(wallet.privateKey);
+  const decoded = wif.decode(wallet.privateKey); 
+  console.log("WIF is valid:", decoded);
    try {
     if (type === "BTC") {
       const NETWORKS = bitcoin.networks.bitcoin;
