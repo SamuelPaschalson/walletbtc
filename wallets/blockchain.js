@@ -6,6 +6,7 @@ const { BIP32Factory } = require("bip32");
 const ecc = require("tiny-secp256k1");
 const { Web3 } = require("web3");
 const { formatBalance } = require("../utils/validation");
+const wif = require("wif");
 
 // BIP32Factory requires a Secp256k1 implementation
 const bip32 = BIP32Factory(ecc);
