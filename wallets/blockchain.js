@@ -15,16 +15,26 @@ const createWallet = async () => {
   const wallets = [];
   // Bitcoin Wallet
   const seed = bip39.mnemonicToSeedSync(mnemonic);
-  const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
   // Use the BIP44 derivation path for Bitcoin: m/44'/0'/0'/0/0
   // Use the BIP84 derivation path for Bitcoin: m/84'/0'/0'/0/0
+  const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+
+  // Define the BIP44 derivation path for Bitcoin
   const path = "m/44'/0'/0'/0/0";
+
+  // Derive the account node
   const account = root.derivePath(path);
-  const bitcoinW = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
+
+  // Create ECPair from the private key
+  const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
+
+  // Create Bitcoin address using P2PKH (Pay-to-PubKey-Hash)
+  const bitcoinW = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey });
+
   wallets.push({
     mnemonic: mnemonic,
     address: bitcoinW.address,
-    privateKey: account.toWIF(),
+    privateKey: keyPair.toWIF(),
     type: "BTC",
     balance: 0,
   });
