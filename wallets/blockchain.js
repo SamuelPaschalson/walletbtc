@@ -14,6 +14,7 @@ const bip32 = BIP32Factory(ecc);
 const createWallet = async () => {
   const wallets = [];
   try {
+    const mnemonic = bip39.generateMnemonic();
     const seed = bip39.mnemonicToSeedSync(mnemonic);
     const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
     const path = "m/44'/0'/0'/0/0";
