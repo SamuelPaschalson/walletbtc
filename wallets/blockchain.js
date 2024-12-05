@@ -9,7 +9,6 @@ const { formatBalance } = require("../utils/validation");
 const wif = require("wif");
 const crypto = require('crypto');
 const secp256k1 = require('secp256k1');
-const axios = require('axios');
 const bs58check = require('bs58check');
 
 
