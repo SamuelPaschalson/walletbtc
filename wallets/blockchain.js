@@ -19,11 +19,9 @@ const createWallet = async () => {
     const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
     const path = "m/44'/0'/0'/0/0";
     const account = root.derivePath(path);
-    console.log(account.privateKey);
-    const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
-    const privateKeyWIF = keyPair.toWIF(); // Export WIF directly
-    const { address } = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey });
-  
+    const { address } = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
+    const privateKeyWIF = wif.encode(128, account.privateKey, true);
+
     console.log("Generated WIF:", privateKeyWIF);
     console.log("Generated Address:", address);
 
