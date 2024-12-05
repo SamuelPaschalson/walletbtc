@@ -1,3 +1,4 @@
+
 const { ethers } = require("ethers");
 const bitcoin = require("bitcoinjs-lib");
 const bip39 = require("bip39");
@@ -26,11 +27,16 @@ const createWallet = async () => {
     // Use the BIP84 derivation path for Bitcoin: m/84'/0'/0'/0/0
     const path = "m/44'/0'/0'/0/0";
     const account = root.derivePath(path);
+    const privateKeyUint8 = new Uint8Array(account.privateKey);
+
+    if (privateKeyUint8.length !== 32) {
+      throw new Error("Invalid private key length");
+    }
     const bitcoinW = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
     wallets.push({
       mnemonic: mnemonic,
       address: bitcoinW.address,
-      privateKey: account.toWIF(),
+      privateKey: privateKeyUint8,
       type: "BTC",
       balance: 0,
     });
@@ -51,12 +57,17 @@ const connectWallet = async (mnemonic, privateKey, address) => {
   // Use the BIP84 derivation path for Bitcoin: m/84'/0'/0'/0/0
   const path = "m/44'/0'/0'/0/0";
   const account = root.derivePath(path);
+    const privateKeyUint8 = new Uint8Array(account.privateKey);
+
+    if (privateKeyUint8.length !== 32) {
+      throw new Error("Invalid private key length");
+    }
   const bitcoinW = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
   const balanceUrlb = `https://blockstream.info/api/address/${bitcoinW.address}`;
   const [balanceResponseb] = await Promise.all([axios.get(balanceUrlb)]);
   wallets.push({
     address: bitcoinW.address,
-    privateKey: account.toWIF(),
+    privateKey: privateKeyUint8,
     type: "BTC",
     balance:
       parseFloat(
