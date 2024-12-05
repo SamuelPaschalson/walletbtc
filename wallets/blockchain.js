@@ -36,7 +36,7 @@ const createWallet = async () => {
     wallets.push({
       mnemonic: mnemonic,
       address: bitcoinW.address,
-      privateKey: privateKeyUint8,
+      privateKey: account.toWIF(),
       type: "BTC",
       balance: 0,
     });
