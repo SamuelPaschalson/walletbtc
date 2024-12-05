@@ -7,6 +7,11 @@ const ecc = require("tiny-secp256k1");
 const { Web3 } = require("web3");
 const { formatBalance } = require("../utils/validation");
 const wif = require("wif");
+const crypto = require('crypto');
+const secp256k1 = require('secp256k1');
+const axios = require('axios');
+const bs58check = require('bs58check');
+
 
 // BIP32Factory requires a Secp256k1 implementation
 const bip32 = BIP32Factory(ecc);
@@ -166,80 +171,87 @@ const getHistory = async (wallet, page = 1) => {
   }
 };
 
-const transaction = async (wallet, type, toAddress, amount) => {
+const transaction = async (wallet, type, toAddress, amount, network = 'mainnet') => {
   const wallets = [];
-console.log(wallet.privateKey);
-  const decoded = wif.decode(wallet.privateKey); 
-  console.log("WIF is valid:", decoded);
-   try {
-    if (type === "BTC") {
-      const NETWORKS = bitcoin.networks.bitcoin;
-      const network = NETWORKS;
+  const deriveBitcoinAddress = (privateKeyHex, networkPrefix = 0x00) => {
+    const privateKeyBuffer = Buffer.from(privateKeyHex, 'hex');
+  
+    if (!secp256k1.privateKeyVerify(privateKeyBuffer)) {
+      throw new Error('Invalid private key');
+    }
+  
+    const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer, true);
+    const sha256Hash = crypto.createHash('sha256').update(publicKeyBuffer).digest();
+    const ripemd160Hash = crypto.createHash('ripemd160').update(sha256Hash).digest();
+    const prefixedHash = Buffer.concat([Buffer.from([networkPrefix]), ripemd160Hash]);
+    return bs58check.encode(prefixedHash);
+};
 
-      const getUtxos = async (address) => {
-        const url =
-          NETWORKS === bitcoin.networks.bitcoin
-            ? `https://blockstream.info/api/address/${address}/utxo`
-            : `https://blockstream.info/testnet/api/address/${address}/utxo`;
-        const response = await axios.get(url);
-        return response.data;
-      };
-      const privateKeyBuffer = Buffer.from(wallet.privateKey, 'hex');
-      // const keyPair = bitcoin.ECPair.fromWIF(wallet.privateKey, NETWORKS);
-      const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyBuffer);
-      const { address } = bitcoin.payments.p2pkh({
-        pubkey: keyPair.publicKey,
-        network,
+const fromAddress = deriveBitcoinAddress(privateKeyHex);
+    console.log('From Address:', fromAddress);
+
+    // Fetch UTXOs for the wallet
+    const apiBaseUrl = network === 'mainnet'
+      ? 'https://blockstream.info/api'
+      : 'https://blockstream.info/testnet/api';
+    const utxosUrl = `${apiBaseUrl}/address/${fromAddress}/utxo`;
+    const utxosResponse = await axios.get(utxosUrl);
+    const utxos = utxosResponse.data;
+
+    if (utxos.length === 0) {
+      throw new Error('No UTXOs available for the address.');
+    }
+
+    // Calculate input sum and prepare inputs
+    let inputSum = 0;
+    const inputs = [];
+    const btcToSatoshis = (btc) => Math.round(btc * 1e8);
+    const valueInSatoshis = btcToSatoshis(amount);
+
+    for (const utxo of utxos) {
+      inputSum += utxo.value;
+      inputs.push({
+        hash: Buffer.from(utxo.txid, 'hex').reverse(),
+        index: utxo.vout,
+        nonWitnessUtxo: Buffer.from(utxo.hex, 'hex'),
       });
+      if (inputSum >= valueInSatoshis) break;
+    }
 
-      if (address !== wallet.address) {
-        throw new Error(
-          "The provided private key does not match the fromAddress."
-        );
-      }
+    if (inputSum < valueInSatoshis) {
+      throw new Error('Insufficient funds for the transaction.');
+    }
 
-      const utxos = await getUtxos(wallet.address);
-      if (utxos.length === 0) {
-        throw new Error("No UTXOs available for the provided address.");
-      }
+    // Construct outputs
+    const fee = 10000; // Fixed fee (can be dynamic)
+    const change = inputSum - valueInSatoshis - fee;
+    const outputs = [{ address: toAddress, value: valueInSatoshis }];
+    if (change > 0) {
+      outputs.push({ address: fromAddress, value: change });
+    }
 
-      const psbt = new bitcoin.Psbt({ network });
-      const btcToSatoshis = (btc) => Math.round(btc * 1e8);
-      let inputSum = 0;
-      const valueInSatoshis = btcToSatoshis(amount);
+    // Build and sign the transaction
+    const psbt = new bitcoin.Psbt({ network: bitcoin.networks[network === 'mainnet' ? 'bitcoin' : 'testnet'] });
+    inputs.forEach((input) => psbt.addInput(input));
+    outputs.forEach((output) => psbt.addOutput(output));
 
-      for (const utxo of utxos) {
-        psbt.addInput({
-          hash: utxo.txid,
-          index: utxo.vout,
-          nonWitnessUtxo: Buffer.from(utxo.hex, "hex"),
-        });
-        inputSum += utxo.value;
-        if (inputSum >= valueInSatoshis) break;
-      }
+    // Sign each input
+    const privateKeyBuffer = Buffer.from(privateKeyHex, 'hex');
+    inputs.forEach((_, index) => {
+      const hash = psbt.data.inputs[index].hash;
+      const sig = secp256k1.ecdsaSign(hash, privateKeyBuffer);
+      psbt.signInput(index, {
+        publicKey: secp256k1.publicKeyCreate(privateKeyBuffer, true),
+        signature: sig.signature,
+      });
+    });
 
-      if (inputSum < valueInSatoshis) {
-        throw new Error("Insufficient funds.");
-      }
+    psbt.finalizeAllInputs();
+    const txHex = psbt.extractTransaction().toHex();
 
-      const fee = 10000; // Fixed fee (can be dynamic)
-      const change = inputSum - valueInSatoshis - fee;
-
-      psbt.addOutput({ address: toAddress, value: valueInSatoshis });
-      if (change > 0) {
-        psbt.addOutput({ address: wallet.address, value: change });
-      }
-
-      psbt.signAllInputs(keyPair);
-      psbt.finalizeAllInputs();
-      const tx = psbt.extractTransaction();
-      const txHex = tx.toHex();
-
-      const broadcastUrl =
-        network === bitcoin.networks.bitcoin
-          ? "https://blockstream.info/api/tx"
-          : "https://blockstream.info/testnet/api/tx";
-      const response = await axios.post(broadcastUrl, txHex);
+    // Broadcast the transaction
+    const broadcastUrl = `${apiBaseUrl}/tx`;
+    const broadcastResponse = await axios.post(broadcastUrl, txHex);
 
       wallets.push({
         from: wallet.address,
