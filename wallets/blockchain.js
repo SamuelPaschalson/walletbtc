@@ -180,9 +180,9 @@ console.log(wallet.privateKey);
         const response = await axios.get(url);
         return response.data;
       };
-
-      const keyPair = bitcoin.ECPair.fromWIF(wallet.privateKey, NETWORKS);
-    
+      const privateKeyBuffer = Buffer.from(wallet.privateKey, 'hex');
+      // const keyPair = bitcoin.ECPair.fromWIF(wallet.privateKey, NETWORKS);
+      const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyBuffer, { network });
       const { address } = bitcoin.payments.p2pkh({
         pubkey: keyPair.publicKey,
         network,
