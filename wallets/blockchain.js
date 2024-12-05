@@ -35,7 +35,11 @@ const createWallet = async () => {
     console.log("Private key length:", account.privateKey.length);
     let privateKeyWIF;
     try {
-      privateKeyWIF = wif.encode(128, account.privateKey, true);
+      // Convert the private key to a Buffer if it's not already
+      const privateKeyBuffer = Buffer.isBuffer(account.privateKey) 
+        ? account.privateKey 
+        : Buffer.from(account.privateKey);
+      privateKeyWIF = wif.encode(128, privateKeyBuffer, true);
       console.log("Private key encoded to WIF format.");
     } catch (wifError) {
       console.error("Error encoding private key to WIF:", wifError);
