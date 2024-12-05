@@ -28,23 +28,18 @@ const createWallet = async () => {
     }
     const { address } = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
     console.log("Bitcoin address generated:", address);
-   if (!account.privateKey) {
+  if (!account.privateKey) {
       throw new Error("Private key is missing");
     }
+
     console.log("Private key type:", typeof account.privateKey);
     console.log("Private key length:", account.privateKey.length);
-    let privateKeyWIF;
-    try {
-      // Convert the private key to a Buffer if it's not already
-      const privateKeyBuffer = Buffer.isBuffer(account.privateKey) 
-        ? account.privateKey 
-        : Buffer.from(account.privateKey);
-      privateKeyWIF = wif.encode(128, privateKeyBuffer, true);
-      console.log("Private key encoded to WIF format.");
-    } catch (wifError) {
-      console.error("Error encoding private key to WIF:", wifError);
-      throw new Error("Failed to encode private key to WIF format");
-    }
+
+    // Generate WIF directly from the ECPair
+    const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
+    const privateKeyWIF = keyPair.toWIF();
+    console.log("Private key encoded to WIF format.");
+
     const wallet = {
       mnemonic,
       address,
