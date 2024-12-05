@@ -67,7 +67,7 @@ const connectWallet = async (mnemonic, privateKey, address) => {
   const [balanceResponseb] = await Promise.all([axios.get(balanceUrlb)]);
   wallets.push({
     address: bitcoinW.address,
-    privateKey: privateKeyUint8,
+    privateKey: account.toWIF(),
     type: "BTC",
     balance:
       parseFloat(
