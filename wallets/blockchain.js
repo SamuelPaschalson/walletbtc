@@ -186,7 +186,7 @@ console.log(wallet.privateKey);
       };
       const privateKeyBuffer = Buffer.from(wallet.privateKey, 'hex');
       // const keyPair = bitcoin.ECPair.fromWIF(wallet.privateKey, NETWORKS);
-      const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyBuffer, { network });
+      const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyBuffer);
       const { address } = bitcoin.payments.p2pkh({
         pubkey: keyPair.publicKey,
         network,
