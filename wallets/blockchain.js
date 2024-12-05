@@ -13,44 +13,21 @@ const bip32 = BIP32Factory(ecc);
 
 const createWallet = async () => {
   try {
-    console.log("Starting wallet creation...");
-    const mnemonic = bip39.generateMnemonic();
-    console.log("Mnemonic generated.");
-    const seed = await bip39.mnemonicToSeed(mnemonic);
-    console.log("Seed created from mnemonic.");
-    const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
-    console.log("Root key derived from seed.");
-    const path = "m/44'/0'/0'/0/0";
-    const account = root.derivePath(path);
-    console.log("Account derived from path:", path);
-    if (!account || !account.publicKey) {
-      throw new Error("Failed to derive account or public key is missing");
-    }
-    const { address } = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
-    console.log("Bitcoin address generated:", address);
-  if (!account.privateKey) {
-      throw new Error("Private key is missing");
-    }
-
-    console.log("Private key type:", typeof account.privateKey);
-    console.log("Private key length:", account.privateKey.length);
-
-    // Generate WIF directly from the ECPair
-    const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
-    const privateKeyWIF = keyPair.toWIF();
-    console.log("Private key encoded to WIF format.");
-
-    const wallet = {
-      mnemonic,
-      address,
-      privateKey: privateKeyWIF,
-      type: "BTC",
-      balance: 0,
-    };
-
-    console.log("Wallet object created:", wallet);
-
-    return { wallets: [wallet] };
+     const wallets = [];
+     const mnemonic = bip39.generateMnemonic();
+     const seed = await bip39.mnemonicToSeed(mnemonic);
+     const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+     const path = "m/44'/0'/0'/0/0";
+     const account = root.derivePath(path);
+     const bitcoinW = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
+     const wallet = {
+        mnemonic,
+        address: bitcoinW.address,
+        privateKey: account.toWIF(),
+        type: "BTC",
+        balance: 0,
+      };
+    return { wallets };
   } catch (error) {
     console.error("Error in createWallet:", error);
     return { error: error.message };
