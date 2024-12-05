@@ -13,31 +13,40 @@ const bip32 = BIP32Factory(ecc);
 
 const createWallet = async () => {
   try {
+    console.log("Starting wallet creation...");
     const mnemonic = bip39.generateMnemonic();
+    console.log("Mnemonic generated.");
     const seed = await bip39.mnemonicToSeed(mnemonic);
+    console.log("Seed created from mnemonic.");
     const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+    console.log("Root key derived from seed.");
     const path = "m/44'/0'/0'/0/0";
     const account = root.derivePath(path);
-    
+    console.log("Account derived from path:", path);
+    if (!account || !account.publicKey) {
+      throw new Error("Failed to derive account or public key is missing");
+    }
     const { address } = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
+    console.log("Bitcoin address generated:", address);
+    if (!account.privateKey) {
+      throw new Error("Private key is missing");
+    }
     const privateKeyWIF = wif.encode(128, account.privateKey, true);
-
-    console.log("Generated Mnemonic:", mnemonic);
-    console.log("Generated WIF:", privateKeyWIF);
-    console.log("Generated Address:", address);
-
-    return {
-      wallets: [{
-        mnemonic,
-        address,
-        privateKey: privateKeyWIF,
-        type: "BTC",
-        balance: 0,
-      }]
+    console.log("Private key encoded to WIF format.");
+    const wallet = {
+      mnemonic,
+      address,
+      privateKey: privateKeyWIF,
+      type: "BTC",
+      balance: 0,
     };
+
+    console.log("Wallet object created:", wallet);
+
+    return { wallets: [wallet] };
   } catch (error) {
-    console.error("Error in createWallet:", error.message);
-    throw error;
+    console.error("Error in createWallet:", error);
+    return { error: error.message };
   }
 };
 
