@@ -13,21 +13,25 @@ const bip32 = BIP32Factory(ecc);
 
 const createWallet = async () => {
   try {
-     const wallets = [];
-     const mnemonic = bip39.generateMnemonic();
-     const seed = await bip39.mnemonicToSeed(mnemonic);
-     const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
-     const path = "m/44'/0'/0'/0/0";
-     const account = root.derivePath(path);
-     const bitcoinW = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
-     const wallet = {
-        mnemonic,
-        address: bitcoinW.address,
-        privateKey: account.toWIF(),
-        type: "BTC",
-        balance: 0,
-      };
-    return { wallets };
+   const mnemonic = bip39.generateMnemonic();
+    const wallets = [];
+    // Bitcoin Wallet
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+    // Use the BIP44 derivation path for Bitcoin: m/44'/0'/0'/0/0
+    // Use the BIP84 derivation path for Bitcoin: m/84'/0'/0'/0/0
+    const path = "m/44'/0'/0'/0/0";
+    const account = root.derivePath(path);
+    const bitcoinW = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
+    wallets.push({
+      mnemonic: mnemonic,
+      address: bitcoinW.address,
+      privateKey: account.toWIF(),
+      type: "BTC",
+      balance: 0,
+    });
+
+  return { wallets };
   } catch (error) {
     console.error("Error in createWallet:", error);
     return { error: error.message };
