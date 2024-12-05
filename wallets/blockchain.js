@@ -182,33 +182,21 @@ const getHistory = async (wallet, page = 1) => {
 };
 
 const transaction = async (wallet, type, toAddress, amount, network = 'mainnet') => {
-  const wallets = [];
-
   try {
-    // Helper function to derive Bitcoin address from a private key
-    const deriveBitcoinAddress = (privateKeyHex, networkPrefix = 0x00) => {
-      const privateKeyBuffer = Buffer.from(privateKeyHex, 'hex');
+    const wallets = [];
+    
+    // Ensure we are using the correct private key in Uint8Array format
+    const privateKeyUint8 = new Uint8Array(wallet.privateKey);  // The private key from the wallet
 
-      if (!secp256k1.privateKeyVerify(privateKeyBuffer)) {
-        throw new Error('Invalid private key');
-      }
+    // Get address derived from the private key
+    const fromAddress = deriveBitcoinAddress(privateKeyUint8);
 
-      const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer, true);
-      const sha256Hash = crypto.createHash('sha256').update(publicKeyBuffer).digest();
-      const ripemd160Hash = crypto.createHash('ripemd160').update(sha256Hash).digest();
-      const prefixedHash = Buffer.concat([Buffer.from([networkPrefix]), ripemd160Hash]);
-      return bs58check.encode(prefixedHash);
-    };
-
-    // Derive the wallet's Bitcoin address
-    const fromAddress = deriveBitcoinAddress(wallet.privateKey);
     console.log('From Address:', fromAddress);
 
-    // Fetch UTXOs for the wallet
-    const apiBaseUrl =
-      network === 'mainnet'
-        ? 'https://blockstream.info/api'
-        : 'https://blockstream.info/testnet/api';
+    // Fetch UTXOs (Unspent Transaction Outputs) for the wallet
+    const apiBaseUrl = network === 'mainnet'
+      ? 'https://blockstream.info/api'
+      : 'https://blockstream.info/testnet/api';
     const utxosUrl = `${apiBaseUrl}/address/${fromAddress}/utxo`;
     const utxosResponse = await axios.get(utxosUrl);
     const utxos = utxosResponse.data;
@@ -245,55 +233,52 @@ const transaction = async (wallet, type, toAddress, amount, network = 'mainnet')
       outputs.push({ address: fromAddress, value: change });
     }
 
-    // Build and sign the transaction
-    const psbt = new bitcoin.Psbt({
-      network: bitcoin.networks[network === 'mainnet' ? 'bitcoin' : 'testnet'],
-    });
+    // Build the PSBT (Partially Signed Bitcoin Transaction)
+    const psbt = new bitcoin.Psbt({ network: bitcoin.networks[network === 'mainnet' ? 'bitcoin' : 'testnet'] });
     inputs.forEach((input) => psbt.addInput(input));
     outputs.forEach((output) => psbt.addOutput(output));
 
-    // Sign each input
-    const privateKeyBuffer = Buffer.from(wallet.privateKey, 'hex');
-    psbt.signAllInputs((index, input) => {
-      const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyBuffer);
-      return keyPair;
+    // Sign each input with the private key (no verification step)
+    inputs.forEach((_, index) => {
+      const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyUint8);
+      psbt.signInput(index, keyPair);
     });
 
+    // Finalize and extract the transaction hex
     psbt.finalizeAllInputs();
     const txHex = psbt.extractTransaction().toHex();
 
-    // Broadcast the transaction
+    // Broadcast the transaction to the network
     const broadcastUrl = `${apiBaseUrl}/tx`;
     const broadcastResponse = await axios.post(broadcastUrl, txHex);
 
-    // Push transaction details into wallets array
     wallets.push({
       from: fromAddress,
       to: toAddress,
       amount: amount,
       txId: broadcastResponse.data,
-      status: 'Transaction performed',
+      status: "Transaction performed",
     });
 
     return { wallets };
   } catch (error) {
-    // Handle specific error messages
     if (
-      error.message.includes('Invalid address') ||
-      error.message.includes('Invalid toAddress')
+      error.message.includes("Invalid address") ||
+      error.message.includes("Invalid toAddress")
     ) {
       return { error: error.message };
     }
-    if (error.message.includes('insufficient funds')) {
-      return { error: 'Insufficient funds for the transaction.' };
+    if (error.message.includes("insufficient funds")) {
+      return { error: "Insufficient funds for the transaction." };
     }
-    if (error.message.includes('nonce too low')) {
-      return { error: 'Nonce too low. Try again with a higher nonce.' };
+    if (error.message.includes("nonce too low")) {
+      return { error: "Nonce too low. Try again with a higher nonce." };
     }
-    console.error('Error performing transaction:', error.message);
-    return { error: 'Failed to perform crypto transaction', message: error.message };
+    console.error("Error performing transaction:", error.message);
+    return { error: "Failed to perform crypto transaction", message: error.message };
   }
 };
+
 
 const search = async (transactionId) => {
   const transaction = await Transaction.findByIdAndUpdate(
