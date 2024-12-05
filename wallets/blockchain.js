@@ -15,26 +15,27 @@ const createWallet = async () => {
   const wallets = [];
   try {
     const mnemonic = bip39.generateMnemonic();
-    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    const seed = await bip39.mnemonicToSeed(mnemonic);
     const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
     const path = "m/44'/0'/0'/0/0";
     const account = root.derivePath(path);
+    
     const { address } = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
     const privateKeyWIF = wif.encode(128, account.privateKey, true);
 
+    console.log("Generated Mnemonic:", mnemonic);
     console.log("Generated WIF:", privateKeyWIF);
     console.log("Generated Address:", address);
 
-    // Push wallet data
-    wallets.push({
-      mnemonic,
-      address: address,
-      privateKey: privateKeyWIF,
-      type: "BTC",
-      balance: 0,
-    });
-
-    return { wallets };
+    return {
+      wallets: [{
+        mnemonic,
+        address,
+        privateKey: privateKeyWIF,
+        type: "BTC",
+        balance: 0,
+      }]
+    };
   } catch (error) {
     console.error("Error in createWallet:", error.message);
     throw error;
