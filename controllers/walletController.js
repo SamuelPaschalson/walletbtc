@@ -268,7 +268,7 @@ exports.transactions = async (req, res) => {
     }
     return res.status(404).json({
       success: false,
-      message: tokens.error,
+      message: tokens,
     });
   } catch (error) {
     res.status(500).json({ sucess: false, error: error.message });
