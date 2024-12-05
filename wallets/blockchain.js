@@ -12,7 +12,6 @@ const wif = require("wif");
 const bip32 = BIP32Factory(ecc);
 
 const createWallet = async () => {
-  const wallets = [];
   try {
     const mnemonic = bip39.generateMnemonic();
     const seed = await bip39.mnemonicToSeed(mnemonic);
