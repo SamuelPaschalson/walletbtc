@@ -202,7 +202,7 @@ const transaction = async (wallet, type, toAddress, amount, network = 'mainnet')
     const privateKeyUint8 = new Uint8Array(wallet.privateKey);  // The private key from the wallet
 
     // Get address derived from the private key
-    const fromAddress = deriveBitcoinAddress(privateKeyUint8);
+    const fromAddress = deriveBitcoinAddress(privateKeyUint8) || wallet.address;
 
     console.log('From Address:', fromAddress);
 
