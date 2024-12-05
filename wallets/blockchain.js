@@ -184,22 +184,6 @@ const getHistory = async (wallet, page = 1) => {
 const transaction = async (wallet, type, toAddress, amount, network = 'mainnet') => {
   try {
     const wallets = [];
-    const deriveBitcoinAddress = (privateKeyHex, networkPrefix = 0x00) => {
-      const privateKeyBuffer = Buffer.from(privateKeyHex, 'hex');
-
-      if (!secp256k1.privateKeyVerify(privateKeyBuffer)) {
-        throw new Error('Invalid private key');
-      }
-
-      const publicKeyBuffer = secp256k1.publicKeyCreate(privateKeyBuffer, true);
-      const sha256Hash = crypto.createHash('sha256').update(publicKeyBuffer).digest();
-      const ripemd160Hash = crypto.createHash('ripemd160').update(sha256Hash).digest();
-      const prefixedHash = Buffer.concat([Buffer.from([networkPrefix]), ripemd160Hash]);
-      return bs58check.encode(prefixedHash);
-    };
-
-    // Ensure we are using the correct private key in Uint8Array format
-    const privateKeyUint8 = new Uint8Array(wallet.privateKey);  // The private key from the wallet
 
     // Get address derived from the private key
     const fromAddress = wallet.address;
@@ -253,7 +237,7 @@ const transaction = async (wallet, type, toAddress, amount, network = 'mainnet')
 
     // Sign each input with the private key (no verification step)
     inputs.forEach((_, index) => {
-      const keyPair = bitcoin.ECPair.fromPrivateKey(privateKeyUint8);
+      const keyPair = bitcoin.ECPair.fromPrivateKey(wallet.privateKey);
       psbt.signInput(index, keyPair);
     });
 
