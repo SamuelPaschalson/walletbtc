@@ -36,54 +36,27 @@ const createWallet = async () => {
 
 const connectWallet = async (mnemonic, privateKey, address) => {
   try {
-    const wallets = [];
-    let bitcoinAddress, wif;
-
-    if (mnemonic) {
-      // Derive address and private key from mnemonic
-      const seed = bip39.mnemonicToSeedSync(mnemonic);
-      if (!seed) throw new Error("Failed to generate seed from mnemonic.");
-
-      const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
-      if (!root) throw new Error("Failed to generate root key from seed.");
-
-      const path = "m/44'/0'/0'/0/0";
-      const account = root.derivePath(path);
-      if (!account || !account.privateKey) throw new Error("Failed to derive account or private key.");
-
-      const keyPair = bitcoin.ECPair.fromPrivateKey(account.privateKey);
-      bitcoinAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
-      wif = keyPair.toWIF();
-    } else if (privateKey) {
-      // Use provided private key
-      const keyPair = bitcoin.ECPair.fromWIF(privateKey, bitcoin.networks.bitcoin);
-      bitcoinAddress = bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey }).address;
-      wif = privateKey;
-    } else if (address) {
-      // Use provided address (no signing capability)
-      bitcoinAddress = address;
-    } else {
-      throw new Error("At least one of mnemonic, privateKey, or address must be provided.");
-    }
-
-    // Fetch balance
-    const balanceUrl = `https://blockstream.info/api/address/${bitcoinAddress}`;
-    const balanceResponse = await axios.get(balanceUrl);
-    const balance =
+     // Bitcoin Wallet
+  const seed = bip39.mnemonicToSeedSync(mnemonic);
+  const root = bip32.fromSeed(seed, bitcoin.networks.bitcoin);
+  // Use the BIP44 derivation path for Bitcoin: m/44'/0'/0'/0/0
+  // Use the BIP84 derivation path for Bitcoin: m/84'/0'/0'/0/0
+  const path = "m/44'/0'/0'/0/0";
+  const account = root.derivePath(path);
+  const bitcoinW = bitcoin.payments.p2pkh({ pubkey: account.publicKey });
+  const balanceUrlb = `https://blockstream.info/api/address/${bitcoinW.address}`;
+  const [balanceResponseb] = await Promise.all([axios.get(balanceUrlb)]);
+  wallets.push({
+    address: bitcoinW.address,
+    privateKey: account.toWIF(),
+    type: "BTC",
+    balance:
       parseFloat(
-        balanceResponse.data.chain_stats.funded_txo_sum / 1e8 -
-        balanceResponse.data.chain_stats.spent_txo_sum / 1e8
-      ) || 0;
-
-    // Push wallet data
-    wallets.push({
-      address: bitcoinAddress,
-      privateKey: wif || null,
-      type: "BTC",
-      balance,
-    });
-
-    return { wallets };
+        balanceResponseb.data.chain_stats.funded_txo_sum / 1e8 -
+          balanceResponseb.data.chain_stats.spent_txo_sum / 1e8
+      ) || 0,
+  });
+  return { wallets };
   } catch (error) {
     console.error("Error in connectWallet:", error.message);
     throw error;
