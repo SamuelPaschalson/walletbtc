@@ -4,7 +4,7 @@ import ListItem from "../listItem/ListItem";
 import TopTen from "../topten/TopTen"; // Import the TopTen component
 import { ArrowBackIos, ArrowForwardIos } from "@material-ui/icons";
 import { motion } from "framer-motion";
-import Preview from "../preview/preview";
+import Preview from "../preview/Preview";
 
 export default function List({ list }) {
   const [isMoved, setIsMoved] = useState(false);
