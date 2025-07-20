@@ -12,7 +12,7 @@ import { Badge, IconButton } from "@material-ui/core";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Navbar = ({ img }) => {
+const Navbar = ({ img = 'https://wallpapers.com/images/hd/netflix-profile-pictures-1000-x-1000-88wkdmjrorckekha.jpg' }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   window.onscroll = () => {
