@@ -79,11 +79,13 @@ const Preview = ({ item, onClose }) => {
             alt={movie.title}
             className="backdrop-image"
           />
+          {movie.assets?.titleLogo !== "" ?
           <img
             src={movie.assets?.titleLogo}
             alt={movie.title}
             className="logo-image"
-          />
+          />: <h1>{movie.title}</h1>
+          
           <div className="backdrop-gradient" />
 
           {/* Close button */}
