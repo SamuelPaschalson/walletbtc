@@ -8,7 +8,7 @@ import {
 } from "@material-ui/icons";
 import axios from "axios";
 import VideoPlayer from "../videoplayer/VideoPlayer";
-import Preview from "../preview/preview";
+import Preview from "../preview/Preview";
 
 const ListItem = ({
   item,
