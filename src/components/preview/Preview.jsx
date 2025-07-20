@@ -85,7 +85,7 @@ const Preview = ({ item, onClose }) => {
             alt={movie.title}
             className="logo-image"
           />: <h1>{movie.title}</h1>
-          
+          }
           <div className="backdrop-gradient" />
 
           {/* Close button */}
