@@ -84,7 +84,7 @@ const Preview = ({ item, onClose }) => {
             src={movie.assets?.titleLogo}
             alt={movie.title}
             className="logo-image"
-          />: <h1>{movie.title}</h1>
+          />: <h1 className="preview-title">{movie.title}</h1>
           }
           <div className="backdrop-gradient" />
 
