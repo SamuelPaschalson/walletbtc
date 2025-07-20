@@ -1,0 +1,145 @@
+.profile-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #141414;
+  color: white;
+  position: relative;
+  padding-top: 20px;
+
+  .header {
+    position: absolute;
+    top: 20px;
+    left: 50px;
+    z-index: 10;
+
+    .logo {
+      height: 45px;
+      width: auto;
+    }
+  }
+
+  .profile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+
+    .title {
+      font-size: 3.5rem;
+      margin-bottom: 3rem;
+      font-weight: 400;
+      text-align: center;
+    }
+
+    .profiles-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-bottom: 4rem;
+      width: 100%;
+
+      .profile-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 0.2s ease;
+
+        &:hover {
+          transform: scale(1.05);
+
+          .profile-avatar {
+            border: 3px solid white;
+          }
+
+          .profile-name {
+            text-align: center;
+            align-self: center;
+            color: white;
+          }
+        }
+
+        .profile-avatar {
+          width: 120px;
+          height: 120px;
+          border-radius: 4px;
+          background-color: #333;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 3rem;
+          transition: all 0.2s ease;
+          overflow: hidden;
+
+          &.add-profile {
+            background-color: transparent;
+            border: 2px dashed gray;
+
+            span {
+              color: gray;
+              font-weight: 200;
+            }
+          }
+        }
+        .profile-add {
+          width: 120px;
+          height: 120px;
+          border-radius: 4px;
+          //   background-color: #333;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 3rem;
+          transition: all 0.2s ease;
+          overflow: hidden;
+
+          &.add-profile {
+            background-color: transparent;
+            border: 2px dashed gray;
+
+            span {
+              color: gray;
+              font-weight: 200;
+            }
+          }
+        }
+
+        .profile-name {
+          color: gray;
+          font-size: 1.3rem;
+          transition: color 0.2s ease;
+        }
+      }
+    }
+
+    .profile-footer {
+      margin-top: 2rem;
+
+      .manage-button {
+        background: transparent;
+        border: 1px solid gray;
+        color: gray;
+        padding: 0.7rem 2rem;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 2px;
+
+        &:hover {
+          border-color: white;
+          color: white;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,504 @@
+// .listItem{
+//     width: 225px;
+//     height: 120px;
+//     background-color:var(--main-color);
+//     margin-right: 5px;
+//     overflow: hidden;
+//     cursor: pointer;
+//     color: white;
+
+//     img {
+//         width: 100%;
+//         height: 100%;
+//         object-fit: cover;
+//     }
+
+//     video{
+//         width: 100%;
+//         height: 140px;
+//         object-fit:cover;
+//         position:absolute;
+//         top:0;
+//         left:0;
+//     }
+
+//     // &:hover{
+//     //     width:325px;
+//     //     height:300px;
+//     //     position: absolute;
+//     //     top: -150px;
+//     //     -webkit-box-shadow: 0px 0px 15px 0px rgba(255, 255, 255, 0.07);
+//     //     box-shadow: 0px 0px 15px 0px rgba(255, 255, 255, 0.07);
+//     //     border-radius: 5px;
+
+//     //     img{
+//     //         height:140px;
+//     //     }
+
+//     //     .itemInfo {
+//     //         display: flex;
+//     //         flex-direction: column;
+//     //         padding: 5px;
+//     //     }
+
+//     //     .icons {
+//     //         display: flex;
+//     //         margin-bottom: 10px;
+
+//     //         .icon {
+//     //             border: 2px solid white;
+//     //             padding: 5px;
+//     //             border-radius: 50%;
+//     //             margin-right: 10px;
+//     //             font-size: 16px;
+//     //           }
+//     //     }
+
+//     //     .itemInfoTop {
+//     //         display: flex;
+//     //         align-items: center;
+//     //         margin-bottom: 10px;
+//     //         font-size: 14px;
+//     //         font-weight: 600;
+//     //         color: gray;
+
+//     //         .limit {
+//     //           border: 1px solid gray;
+//     //           padding: 1px 3px;
+//     //           margin: 0 10px;
+//     //         }
+//     //     }
+
+//     //     .desc {
+//     //         font-size: 13px;
+//     //         margin-bottom: 10px;
+//     //       }
+
+//     //       .genre {
+//     //         font-size: 14px;
+//     //         color: lightgray;
+//     //       }
+
+//     // }
+
+// }
+
+// .movieRowItem {
+//     .img {
+//       width: 235px;
+//       height: 120px;
+//       background-color: white;
+//       margin-right: 5px;
+//       border-radius: 2px;
+//       cursor: pointer;
+//       color: black;
+//       z-index: 9;
+//       transition: transform 0.3s ease-in-out;
+
+//       img {
+//         width: 100%;
+//         height: 100%;
+//         object-fit: cover;
+//       }
+//     }
+
+//     .itemInfo {
+//       position: absolute;
+//       top: 0;
+//       left: 0;
+//       width: 235px;
+//       height: 120px;
+//       background: rgba(0, 0, 0);
+//       opacity: 1;
+//       color: white;
+//       z-index: 99;
+//       padding: 10px;
+//       box-sizing: border-box;
+//       overflow-y: auto;
+//       font-size: 12px;
+
+//       .icons {
+//         display: flex;
+//         align-items: center;
+//         margin-bottom: 10px;
+
+//         .icon {
+//           font-size: 20px;
+//           margin-right: 10px;
+//           cursor: pointer;
+//         }
+//       }
+
+//       .itemInfoTop {
+//         display: flex;
+//         align-items: center;
+//         margin-bottom: 10px;
+
+//         .match {
+//           display: inline-block;
+//           width: auto;
+//           font-size: .5vw;
+//           font-weight: 600;
+//           margin-right: .4vw;
+//           color: #46D369;
+//         }
+
+//         .limit {
+//           margin-left: 5px;
+//           display: inline-block;
+//           position: relative;
+//           width: auto;
+//           font-size: .5vw;
+//           padding: 0 0.4em;
+//           margin-right: .4vw;
+//           border: solid 1px rgba(#fff, 0.4);
+//         }
+
+//         .duration {
+//           display: inline-block;
+//           width: auto;
+//           font-size: .5vw;
+//         }
+//       }
+
+//       .desc {
+//         margin-bottom: 10px;
+//       }
+
+//       .genre {
+//         font-weight: bold;
+//         display: block;
+//         width: 100%;
+//         span {
+//           display: inline-block;
+//           width: auto;
+//           font-size: .5vw;
+//           margin: 0 .3vw 0 0;
+//           &:after {
+//             content: "●";
+//             display: inline-block;
+//             margin: 0 0 0 .3vw;
+//             font-size: .8 xvw;
+//             text-shadow: 0 1px 1px rgba(0, 0, 0, 0);
+//             color: rgba(#fff, 0.4);
+//           }
+//           &:last-child:after {
+//             display: none;
+//           }
+//         }
+//       }
+//     }
+
+//     /* Styles for non-hovered state */
+//     &:not(:hover) {
+//       .img {
+//         transform: scale(1); // Reset scale
+//       }
+//       .itemInfo {
+//         display: none; // Hide itemInfo
+//       }
+//     }
+//   }
+//   .hovered{
+//     &:hover {
+//       box-shadow: 0 0 2px #000a;
+//       z-index: 9999;
+//       .img {
+//         transform: scale(1.5);
+//         transition-timing-function: ease-in;
+//         transition: all .8s ease-out;
+//         z-index: 99;
+//         border-radius: 6px 6px 0px 0px;
+//         img{
+//           border-radius: 6px 6px 0px 0px;
+//         }
+//         video {
+//           display: block;
+//           // width: ;
+//           z-index: 99;
+//         }
+//         .itemInfo {
+//           border-radius: 0px 0px 6px 6px;
+//           display: block;
+//           width: 235px;
+//           margin-top: 121px;
+//           height: 110px;
+//           z-index: 99;
+//         }
+//       }
+//     }
+
+// }
+
+.listItem {
+  margin-right: 5px;
+  width: 225px;
+  height: 120px;
+  background-color: #0b0b0b;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2px;
+  }
+
+  &:hover {
+    transform: scale(1.1);
+    z-index: 99;
+
+    img {
+      border-radius: 2px 2px 0 0;
+    }
+  }
+
+  .itemInfo {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: #181818;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    border-radius: 0 0 2px 2px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+
+    .icons {
+      display: flex;
+      margin-bottom: 10px;
+
+      .icon {
+        border: 2px solid white;
+        padding: 5px;
+        border-radius: 50%;
+        margin-right: 10px;
+        font-size: 16px;
+        transition: all 0.2s ease;
+
+        &.play {
+          background-color: white;
+          color: black;
+        }
+
+        &:hover {
+          border-color: #b3b3b3;
+        }
+      }
+    }
+
+    .itemInfoTop {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: gray;
+
+      .limit {
+        border: 1px solid gray;
+        padding: 1px 3px;
+        margin: 0 10px;
+      }
+    }
+
+    .desc {
+      font-size: 12px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .genre {
+      font-size: 12px;
+      color: gray;
+    }
+  }
+}
+
+.listItem {
+  margin-right: 5px;
+  width: 225px;
+  height: 120px;
+  background-color: #0b0b0b;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+
+  &.hovered {
+    transform: scale(1.3);
+    z-index: 10;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+  }
+
+  .mediaContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+
+    .itemImage {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.5s ease;
+
+      .hovered & {
+        opacity: 0.7;
+      }
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background-color: #000;
+    }
+  }
+
+  .itemHover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.7) 50%,
+      transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    .hovered & {
+      opacity: 1;
+    }
+
+    .itemInfo {
+      .icons {
+        display: flex;
+        margin-bottom: 10px;
+
+        .icon {
+          border: 2px solid rgba(255, 255, 255, 0.7);
+          padding: 5px;
+          border-radius: 50%;
+          margin-right: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          transition: all 0.2s ease;
+          background-color: rgba(0, 0, 0, 0.6);
+
+          &.play {
+            background-color: white;
+            color: black;
+            border-color: white;
+          }
+
+          &:hover {
+            border-color: white;
+            transform: scale(1.1);
+          }
+        }
+      }
+
+      .itemInfoTop {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #46d369;
+        gap: 10px;
+
+        .limit {
+          color: white;
+          padding: 1px 3px;
+          background-color: rgba(109, 109, 110, 0.7);
+          border-radius: 2px;
+        }
+
+        .hd {
+          border: 1px solid rgba(255, 255, 255, 0.4);
+          padding: 1px 3px;
+          border-radius: 2px;
+          color: white;
+        }
+      }
+
+      .genres {
+        display: flex;
+        gap: 8px;
+        margin-top: 5px;
+
+        span {
+          font-size: 11px;
+          color: white;
+
+          &:not(:last-child):after {
+            content: "•";
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .listItem {
+    width: 160px;
+    height: 90px;
+
+    &:hover {
+      transform: scale(1.2);
+    }
+
+    .itemHover {
+      .itemInfo {
+        padding: 8px;
+
+        .icons {
+          .icon {
+            padding: 3px;
+            font-size: 14px;
+            margin-right: 5px;
+          }
+        }
+
+        .itemInfoTop {
+          font-size: 10px;
+        }
+
+        .genres {
+          span {
+            font-size: 10px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .listItem {
+    width: 120px;
+    height: 70px;
+
+    .itemHover {
+      display: none; // Disable hover effects on small devices
+    }
+  }
+}
