@@ -9,11 +9,11 @@
   .header {
     position: absolute;
     top: 20px;
-    left: 50px;
+    left: 20px;
     z-index: 10;
 
     .logo {
-      height: 45px;
+      height: 30px;
       width: auto;
     }
   }
@@ -22,33 +22,37 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    justify-content: flex-start;
+    padding-top: 100px;
+    height: auto;
+    min-height: 100vh;
     width: 100%;
-    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 100px 20px 40px;
     box-sizing: border-box;
 
     .title {
-      font-size: 3.5rem;
-      margin-bottom: 3rem;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
       font-weight: 400;
       text-align: center;
     }
 
     .profiles-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2.5rem;
-      margin-bottom: 4rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 3rem;
       width: 100%;
+      max-width: 300px;
+      justify-items: center;
 
       .profile-item {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%; // Make sure the item takes full width of grid cell
+        max-width: 120px; // Set a max-width for consistency
         cursor: pointer;
         text-decoration: none;
         transition: transform 0.2s ease;
@@ -57,80 +61,85 @@
           transform: scale(1.05);
 
           .profile-avatar {
-            border: 3px solid white;
+            border: 2px solid white;
           }
 
           .profile-name {
-            text-align: center;
-            align-self: center;
             color: white;
           }
         }
 
         .profile-avatar {
-          width: 120px;
-          height: 120px;
+          width: 100px;
+          height: 100px;
           border-radius: 4px;
           background-color: #333;
-          margin-bottom: 1rem;
+          margin-bottom: 0.8rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 3rem;
+          position: relative;
           transition: all 0.2s ease;
           overflow: hidden;
+          border: 2px solid transparent;
 
-          &.add-profile {
-            background-color: transparent;
-            border: 2px dashed gray;
+          &.kid-profile {
+            border: 2px solid #e5b300;
 
-            span {
-              color: gray;
-              font-weight: 200;
+            .kid-badge {
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              background-color: #e5b300;
+              color: black;
+              font-size: 0.8rem;
+              text-align: center;
+              padding: 2px 0;
+              font-weight: bold;
             }
           }
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
         }
+
         .profile-add {
-          width: 120px;
-          height: 120px;
+          width: 100px;
+          height: 100px;
           border-radius: 4px;
-          //   background-color: #333;
-          margin-bottom: 1rem;
+          margin-bottom: 0.8rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 3rem;
-          transition: all 0.2s ease;
-          overflow: hidden;
 
-          &.add-profile {
-            background-color: transparent;
-            border: 2px dashed gray;
-
-            span {
-              color: gray;
-              font-weight: 200;
-            }
+          img {
+            width: 65px;
+            height: 65px;
           }
         }
 
         .profile-name {
           color: gray;
-          font-size: 1.3rem;
+          font-size: 0.8rem;
           transition: color 0.2s ease;
+          text-align: center;
         }
       }
     }
 
     .profile-footer {
-      margin-top: 2rem;
+      margin-top: 1.5rem;
 
       .manage-button {
         background: transparent;
         border: 1px solid gray;
         color: gray;
-        padding: 0.7rem 2rem;
-        font-size: 1.3rem;
+        padding: 0.5rem 1.5rem;
+        font-size: 0.8rem;
         cursor: pointer;
         transition: all 0.2s ease;
         border-radius: 2px;
@@ -139,6 +148,61 @@
           border-color: white;
           color: white;
         }
+      }
+    }
+  }
+
+  @media (min-width: 701px) {
+    .profile-content {
+      justify-content: center;
+      padding-top: 0;
+
+      .title {
+        font-size: 3.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .profiles-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2.5rem;
+        max-width: 800px;
+        justify-content: center;
+
+        .profile-item {
+          .profile-avatar {
+            width: 120px;
+            height: 120px;
+          }
+
+          .profile-add {
+            width: 120px;
+            height: 120px;
+            img {
+              width: 70px;
+              height: 70px;
+            }
+          }
+
+          .profile-name {
+            font-size: 0.9rem;
+          }
+        }
+      }
+
+      .profile-footer {
+        .manage-button {
+          padding: 0.7rem 2rem;
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .header {
+      left: 50px;
+
+      .logo {
+        height: 45px;
       }
     }
   }
